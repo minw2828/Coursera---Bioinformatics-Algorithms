@@ -1,0 +1,82 @@
+#!/usr/bin/python
+
+###############################################################################
+#
+# Author:
+#
+# Sanyk28 (san-heng-yi-shu@163.com)
+#
+# Date created:
+#
+# 19 Nov 2013
+#
+# Generating Theoretical Spectrum Problem: 
+# Generate the theoretical spectrum of a cyclic peptide.
+#     Input: An amino acid string Peptide.
+#     Output: Cyclospectrum(Peptide).
+#
+# CODE CHALLENGE: Solve the Generating Theoretical Spectrum Problem.
+#
+# Sample Input:
+#     LEQN
+#
+# Sample Output:
+#     0 113 114 128 129 227 242 242 257 355 356 370 371 484
+#
+############################################################################### 
+
+import sys
+import re
+from itertools import product
+from Bio.Seq import Seq
+from Bio.Alphabet import generic_dna
+
+def read_file(input_file):
+    f = open(input_file)
+    raw_input = f.readlines()
+    f.close()
+    return raw_input
+
+def reverse_complement(dna):
+    my_dna = Seq(dna,generic_dna)
+    my_dna_rc = my_dna.reverse_complement()
+    return str(my_dna_rc)
+
+def generate_kmers(dna,peptide):
+    codons, kmers = [],[]
+    for d,v in dna_codon_table.iteritems():
+        if v == peptide[0]:
+            codons.append(d)
+
+    for codon in codons:
+        for index in [m.start() for m in re.finditer(r'(?=(%s))'%codon,dna)]:
+            kmers.append(dna[index:index+len(peptide)*3])
+    return kmers
+
+def translation(DNA):
+    my_dna = Seq(DNA, generic_dna)
+    protein = my_dna.translate()
+    return str(protein)
+
+def confirm_tranlation(dna,peptide):
+    kmers = generate_kmers(dna,peptide)
+    confirmed_kmers = []
+    for k in kmers:
+        if translation(k) == peptide:
+            confirmed_kmers.append(k)
+    return confirmed_kmers
+
+def result(filename):
+    dna,peptide = [item.strip() for item in read_file(filename)]   
+    results = [item for item in confirm_tranlation(dna,peptide)]
+    for item in confirm_tranlation(reverse_complement(dna),peptide):
+        results.append(reverse_complement(item))
+    return results
+
+if __name__ == "__main__":
+
+    monoisotopic_mass_table = {}
+    for line in read_file('integer_mass_table.txt'):
+        monoisotopic_mass_table[line.strip().split(' ')[0]] = line.strip().split(' ')[1]
+    print monoisotopic_mass_table
+    # print '\n'.join(result(sys.argv[-1]))

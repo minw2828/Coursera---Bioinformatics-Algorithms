@@ -1,0 +1,20 @@
+def compare(filename1,filename2):
+    f1 = open(filename1)
+    data1 = f1.readlines()
+    f1.close()
+    data1 = [item.strip().split(' -> ') for item in data1]
+    f2 = open(filename2)
+    data2 = f2.readlines()
+    f2.close()
+    data2 = [item.strip().split(' -> ') for item in data2]
+    length1 = len(data1)
+    length2 = len(data2)
+    print 'Number of lines in '+filename1 + ' :'+str(length1)
+    print 'Number of lines in '+filename2 + ' :'+str(length2)
+    for item in data1:
+        if item not in data2:
+            print str(item) + ' in ' + filename1 + ' not in ' + filename2
+    for item in data2:
+        if item not in data1:
+            print str(item) + ' in ' + filename2 + ' not in ' + filename1
+    return None
